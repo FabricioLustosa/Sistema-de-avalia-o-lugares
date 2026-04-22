@@ -2,6 +2,7 @@ package com.fabriciolustosa.sistema_de_avaliacao_de_lugares.service;
 
 import com.fabriciolustosa.sistema_de_avaliacao_de_lugares.entities.Place;
 import com.fabriciolustosa.sistema_de_avaliacao_de_lugares.entities.Review;
+import com.fabriciolustosa.sistema_de_avaliacao_de_lugares.exception.ResourceNotFoundException;
 import com.fabriciolustosa.sistema_de_avaliacao_de_lugares.repository.PlaceRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -40,7 +41,9 @@ public class PlaceService {
 
     public Review addReview(@PathVariable Long placeId, @RequestBody Review review) {
         Place place = placeRepository.findById(placeId)
-                .orElseThrow(() -> new RuntimeException("Place not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Place not found"));
+
+
 
         review.setPlace(place);
         place.getReviews().add(review);
