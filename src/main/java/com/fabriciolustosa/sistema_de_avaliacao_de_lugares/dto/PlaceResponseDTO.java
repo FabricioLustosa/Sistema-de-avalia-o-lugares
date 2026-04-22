@@ -1,0 +1,22 @@
+package com.fabriciolustosa.sistema_de_avaliacao_de_lugares.dto;
+
+
+import com.fabriciolustosa.sistema_de_avaliacao_de_lugares.entities.Place;
+import lombok.Data;
+
+@Data
+public class PlaceResponseDTO {//control what the API returns
+    private Long id;
+    private String name;
+    private String city;
+    private String description;
+    private double averageRating;
+
+    public PlaceResponseDTO(Place place) {
+        this.id = place.getId();
+        this.name = place.getName();
+        this.city = place.getCity();
+        this.averageRating = place.getAverageRating();
+    }
+
+}
