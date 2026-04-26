@@ -11,6 +11,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.List;
 
+//essa camada service é a camada da lógica de negócio: valida, processa e chama o repository
+
 @Service
 public class PlaceService {
 
