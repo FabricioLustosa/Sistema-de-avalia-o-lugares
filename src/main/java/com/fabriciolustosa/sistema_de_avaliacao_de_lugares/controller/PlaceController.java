@@ -43,4 +43,9 @@ public class PlaceController {
     public Review addReview(@PathVariable Long placeId, @RequestBody Review review) {
        return placeService.addReview(placeId, review);
     }
+
+    @DeleteMapping("/{placeId}/reviews/{id}")
+    public void deleteReview(@PathVariable Long placeId, @PathVariable Long id){
+        placeService.deleteReview(placeId, id);
+    }
 }
