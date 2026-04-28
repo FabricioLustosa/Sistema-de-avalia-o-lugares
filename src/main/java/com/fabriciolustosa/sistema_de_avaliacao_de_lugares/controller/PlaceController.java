@@ -23,11 +23,12 @@ public class PlaceController {
         return ResponseEntity.status(201).body(new PlaceResponseDTO(salvo));//ao salvar o place, os reviews são salvos automaticamente
     }
 
+    // Endpoint para listar todos os lugares convertidos para DTO
     @GetMapping
     public List<PlaceResponseDTO> list(){
         return placeService.listAll()
                 .stream()
-                .map(PlaceResponseDTO::new)
+                .map(PlaceResponseDTO::new) // Mapeia cada Place para PlaceResponseDTO
                 .toList();
     }
 
@@ -41,11 +42,13 @@ public class PlaceController {
         placeService.delete(id);//ao deletar o place, os reviews são deletados automaticamente
     }
 
+    // Endpoint para adicionar uma avaliação a um lugar específico
     @PostMapping("/{placeId}/reviews")
     public Review addReview(@PathVariable Long placeId, @RequestBody Review review) {
        return placeService.addReview(placeId, review);
     }
 
+    // Endpoint para deletar uma avaliação específica de um lugar
     @DeleteMapping("/{placeId}/reviews/{id}")
     public void deleteReview(@PathVariable Long placeId, @PathVariable Long id){
         placeService.deleteReview(placeId, id);
