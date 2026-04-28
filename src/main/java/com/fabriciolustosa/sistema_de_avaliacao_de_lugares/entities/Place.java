@@ -2,21 +2,23 @@ package com.fabriciolustosa.sistema_de_avaliacao_de_lugares.entities;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
-import lombok.Data;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@Data
+@Getter
+@Setter
+@NoArgsConstructor
 public class Place {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToMany(mappedBy = "place", cascade = CascadeType.ALL, fetch = FetchType.EAGER)//diz que o lado dono do relacionamento é o review (por conta do tipo da lista)
-    //e o campo que faz essa ligacao se chama "place" dentro da classe Review
-    //CascadeType.ALL diz que toda operacao feita no Place será replicada automaticamente nos Reviews
+      @OneToMany(mappedBy = "place", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     @JsonManagedReference
     private List<Review> reviews = new ArrayList<>();
 
@@ -32,5 +34,15 @@ public class Place {
                 .average()
                 .orElse(0);
     }
+
+      public void addReview(Review review) {
+        reviews.add(review);
+        review.setPlace(this);
+      }
+
+      public void removeReview(Review review) {
+        reviews.remove(review);
+        review.setPlace(null);
+      }
 
 }

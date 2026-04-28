@@ -5,6 +5,8 @@ import com.fabriciolustosa.sistema_de_avaliacao_de_lugares.entities.Place;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
+import java.util.Collections;
+import java.util.ArrayList;
 import java.util.List;
 
 @Data
@@ -23,13 +25,14 @@ public class PlaceResponseDTO {//control what the API returns
         this.description = place.getDescription();
         this.city = place.getCity();
         this.averageRating = place.getAverageRating();
-
-        List<PlaceResponseDTO> list(){
-            return placeService.listAll()
-                    .stream()
-                    .map(PlaceResponseDTO::new)
-                    .toList();
-        }
+            this.reviewResponseDTOS = new ArrayList<>();
+            if (place.getReviews() == null) {
+              this.reviewResponseDTOS = Collections.emptyList();
+            } else {
+              for (int i = 0; i < place.getReviews().size(); i++) {
+                this.reviewResponseDTOS.add(new ReviewResponseDTO(place.getReviews().get(i)));
+              }
+            }
     }
 
 }
