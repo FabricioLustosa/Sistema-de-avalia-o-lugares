@@ -23,13 +23,6 @@ public class PlaceResponseDTO {//control what the API returns
         this.description = place.getDescription();
         this.city = place.getCity();
         this.averageRating = place.getAverageRating();
-
-        List<PlaceResponseDTO> list(){
-            return placeService.listAll()
-                    .stream()
-                    .map(PlaceResponseDTO::new)
-                    .toList();
-        }
     }
 
 }
