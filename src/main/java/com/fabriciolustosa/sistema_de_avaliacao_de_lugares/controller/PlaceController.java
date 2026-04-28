@@ -5,11 +5,12 @@ import com.fabriciolustosa.sistema_de_avaliacao_de_lugares.dto.PlaceResponseDTO;
 import com.fabriciolustosa.sistema_de_avaliacao_de_lugares.entities.Review;
 import com.fabriciolustosa.sistema_de_avaliacao_de_lugares.service.PlaceService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@RestController
+@RestController//recebe a requisição do Postman
 @RequestMapping("/places")
 public class PlaceController {
 
@@ -17,8 +18,9 @@ public class PlaceController {
     private PlaceService placeService; // ← usa o Service, não o Repository diretamente
 
     @PostMapping
-    public Place create(@RequestBody Place place){
-        return placeService.create(place);//ao salvar o place, os reviews são salvos automaticamente
+    public ResponseEntity<PlaceResponseDTO> create(@RequestBody Place place){
+        Place salvo = placeService.create(place);
+        return ResponseEntity.status(201).body(new PlaceResponseDTO(salvo));//ao salvar o place, os reviews são salvos automaticamente
     }
 
     @GetMapping
