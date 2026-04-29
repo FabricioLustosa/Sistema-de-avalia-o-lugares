@@ -33,10 +33,6 @@ public class PlaceService {
     public List<Place> getTopRated(){
         return placeRepository.findAll()
                 .stream()
-                .sorted((p1, p2) -> Double.compare(
-                        p2.getAverageRating(),
-                        p1.getAverageRating()
-                ))
                 .toList();//converte o stream de volta pra lista
     }
 
@@ -48,10 +44,6 @@ public class PlaceService {
         Place place = placeRepository.findById(placeId)
                 .orElseThrow(() -> new ResourceNotFoundException("Place not found"));
 
-
-
-        review.setPlace(place);
-        place.getReviews().add(review);
         placeRepository.save(place);
 
         return review;
@@ -60,14 +52,5 @@ public class PlaceService {
     public void deleteReview(Long placeId, Long id){
         Place place = placeRepository.findById(placeId)
                 .orElseThrow(() -> new ResourceNotFoundException("Place not found"));
-
-        List<Review> reviews = place.getReviews();
-
-        for(int i = 0; i < reviews.size(); i++){
-            Review review = reviews.get(i);
-            if(review.getId().equals(id)){
-                reviewRepository.delete(review);
-            }
-        }
     }
 }

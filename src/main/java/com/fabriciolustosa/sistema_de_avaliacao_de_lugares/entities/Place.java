@@ -24,13 +24,5 @@ public class Place {
     private String city;
     private String description;
 
-    public double getAverageRating(){
-        if(reviews == null || reviews.isEmpty()) return 0;
-
-        return reviews.stream()
-                .mapToInt(Review::getRating)
-                .average()
-                .orElse(0);
-    }
 
 }

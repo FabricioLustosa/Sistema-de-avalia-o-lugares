@@ -16,13 +16,4 @@ public class PlaceResponseDTO {//control what the API returns
     private String description;
     private double averageRating;
     private List<ReviewResponseDTO> reviewResponseDTOS;
-
-    public PlaceResponseDTO (Place place) {
-        this.id = place.getId();
-        this.name = place.getName();
-        this.description = place.getDescription();
-        this.city = place.getCity();
-        this.averageRating = place.getAverageRating();
-    }
-
 }

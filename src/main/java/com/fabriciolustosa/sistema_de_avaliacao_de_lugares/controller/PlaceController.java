@@ -18,17 +18,14 @@ public class PlaceController {
     private PlaceService placeService; // ← usa o Service, não o Repository diretamente
 
     @PostMapping
-    public ResponseEntity<PlaceResponseDTO> create(@RequestBody Place place){
+    public ResponseEntity<Place> create(@RequestBody Place place){
         Place salvo = placeService.create(place);
-        return ResponseEntity.status(201).body(new PlaceResponseDTO(salvo));//ao salvar o place, os reviews são salvos automaticamente
+        return ResponseEntity.status(201).body(place);//ao salvar o place, os reviews são salvos automaticamente
     }
 
     @GetMapping
-    public List<PlaceResponseDTO> list(){
-        return placeService.listAll()
-                .stream()
-                .map(PlaceResponseDTO::new)
-                .toList();
+    public List<Place> list(){
+        return placeService.listAll();
     }
 
     @GetMapping("/top-rated")
