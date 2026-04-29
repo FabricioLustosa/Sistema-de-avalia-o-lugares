@@ -14,9 +14,7 @@ public class Place {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToMany(mappedBy = "place", cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)//diz que o lado dono do relacionamento é o review (por conta do tipo da lista)
-    //e o campo que faz essa ligacao se chama "place" dentro da classe Review
-    //CascadeType.ALL diz que toda operacao feita no Place será replicada automaticamente nos Reviews
+    @OneToMany(mappedBy = "place", cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
     @JsonManagedReference
     private List<Review> reviews = new ArrayList<>();
 
@@ -24,13 +22,5 @@ public class Place {
     private String city;
     private String description;
 
-    public double getAverageRating(){
-        if(reviews == null || reviews.isEmpty()) return 0;
-
-        return reviews.stream()
-                .mapToInt(Review::getRating)
-                .average()
-                .orElse(0);
-    }
 
 }
