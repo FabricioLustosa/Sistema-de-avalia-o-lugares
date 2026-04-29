@@ -14,7 +14,7 @@ public class Place {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToMany(mappedBy = "place", cascade = CascadeType.ALL, fetch = FetchType.EAGER)//diz que o lado dono do relacionamento é o review (por conta do tipo da lista)
+    @OneToMany(mappedBy = "place", cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)//diz que o lado dono do relacionamento é o review (por conta do tipo da lista)
     //e o campo que faz essa ligacao se chama "place" dentro da classe Review
     //CascadeType.ALL diz que toda operacao feita no Place será replicada automaticamente nos Reviews
     @JsonManagedReference
