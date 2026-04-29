@@ -9,7 +9,7 @@ import java.util.List;
 
 @Data
 @AllArgsConstructor
-public class PlaceResponseDTO {//control what the API returns
+public class PlaceResponseDTO {
     private Long id;
     private String name;
     private String city;

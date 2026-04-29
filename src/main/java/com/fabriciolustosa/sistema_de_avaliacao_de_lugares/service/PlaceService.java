@@ -33,7 +33,7 @@ public class PlaceService {
     public List<Place> getTopRated(){
         return placeRepository.findAll()
                 .stream()
-                .toList();//converte o stream de volta pra lista
+                .toList();
     }
 
     public void delete(Long id){
