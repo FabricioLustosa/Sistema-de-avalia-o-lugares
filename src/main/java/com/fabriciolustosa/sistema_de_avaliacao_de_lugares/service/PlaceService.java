@@ -6,7 +6,6 @@ import com.fabriciolustosa.sistema_de_avaliacao_de_lugares.entities.Review;
 import com.fabriciolustosa.sistema_de_avaliacao_de_lugares.exception.ResourceNotFoundException;
 import com.fabriciolustosa.sistema_de_avaliacao_de_lugares.repository.PlaceRepository;
 import com.fabriciolustosa.sistema_de_avaliacao_de_lugares.repository.ReviewRepository;
-import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -34,10 +33,6 @@ public class PlaceService {
     public List<Place> getTopRated(){
         return placeRepository.findAll()
                 .stream()
-                .sorted((p1, p2) -> Double.compare(
-                        p2.getAverageRating(),
-                        p1.getAverageRating()
-                ))
                 .toList();//converte o stream de volta pra lista
     }
 
@@ -49,29 +44,13 @@ public class PlaceService {
         Place place = placeRepository.findById(placeId)
                 .orElseThrow(() -> new ResourceNotFoundException("Place not found"));
 
-
-
-        review.setPlace(place);
-        place.getReviews().add(review);
         placeRepository.save(place);
 
         return review;
     }
 
-    // Método para deletar um review específico de um lugar
-    @Transactional
     public void deleteReview(Long placeId, Long id){
-        // Primeiro, verificamos se o lugar (Place) existe
         Place place = placeRepository.findById(placeId)
                 .orElseThrow(() -> new ResourceNotFoundException("Place not found"));
-
-        Review review = reviewRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Review not found"));
-
-       if(!review.getPlace().getId().equals(placeId)){
-           throw new ResourceNotFoundException("Review does not belogng to this place");
-       }
-
-       place.getReviews().remove(review);
     }
 }
