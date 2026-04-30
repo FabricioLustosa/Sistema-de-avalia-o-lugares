@@ -4,11 +4,12 @@ package com.fabriciolustosa.sistema_de_avaliacao_de_lugares.dto;
 import com.fabriciolustosa.sistema_de_avaliacao_de_lugares.entities.Place;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.util.List;
 
 @Data
-@AllArgsConstructor
+@NoArgsConstructor
 public class PlaceResponseDTO {//control what the API returns
     private Long id;
     private String name;
