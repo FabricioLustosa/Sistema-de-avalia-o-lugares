@@ -1,10 +1,12 @@
 package com.fabriciolustosa.sistema_de_avaliacao_de_lugares.controller;
 
 import com.fabriciolustosa.sistema_de_avaliacao_de_lugares.dto.PlaceUpdateRequestDTO;
+import com.fabriciolustosa.sistema_de_avaliacao_de_lugares.dto.ReviewRequestDTO;
 import com.fabriciolustosa.sistema_de_avaliacao_de_lugares.dto.ReviewResponseDTO;
 import com.fabriciolustosa.sistema_de_avaliacao_de_lugares.entities.Place;
 import com.fabriciolustosa.sistema_de_avaliacao_de_lugares.dto.PlaceResponseDTO;
 import com.fabriciolustosa.sistema_de_avaliacao_de_lugares.entities.Review;
+import com.fabriciolustosa.sistema_de_avaliacao_de_lugares.mapper.ReviewMapper;
 import com.fabriciolustosa.sistema_de_avaliacao_de_lugares.service.PlaceService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -64,7 +66,7 @@ public class PlaceController {
     public ResponseEntity<ReviewResponseDTO> addReview(@PathVariable Long placeId, @Valid @RequestBody Review review) {
        Review savedReview = placeService.addReview(placeId, review);
 
-        return ResponseEntity.status(201).body(new ReviewResponseDTO(savedReview));
+        return ResponseEntity.status(201).body(ReviewMapper.toDTO(savedReview));
     }
 
     // Endpoint para deletar uma avaliação específica de um lugar

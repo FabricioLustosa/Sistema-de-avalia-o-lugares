@@ -1,15 +1,14 @@
 package com.fabriciolustosa.sistema_de_avaliacao_de_lugares.dto;
 
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
-@NoArgsConstructor
 @AllArgsConstructor
-public class PlaceUpdateRequestDTO {
-    //only want the client should send
-    private String name;
-    private String description;
-    private String city;
+@NoArgsConstructor
+public class ReviewRequestDTO {
+    private int rating;
+    private String comment;
 }

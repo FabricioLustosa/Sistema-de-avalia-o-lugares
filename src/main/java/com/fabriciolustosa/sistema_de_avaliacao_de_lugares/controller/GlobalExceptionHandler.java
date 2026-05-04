@@ -14,6 +14,7 @@ import java.util.Map;
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(ResourceNotFoundException.class)//define qual exceção usar
+    //tells Spring: When this specific exception is thrown, run this method
     public ResponseEntity<Map<String, String>> handleNotFound(ResourceNotFoundException ex) {
 
         Map<String, String> error = new HashMap<>();

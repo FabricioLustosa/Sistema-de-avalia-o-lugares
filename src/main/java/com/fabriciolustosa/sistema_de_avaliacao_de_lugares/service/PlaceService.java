@@ -2,6 +2,7 @@ package com.fabriciolustosa.sistema_de_avaliacao_de_lugares.service;
 
 import com.fabriciolustosa.sistema_de_avaliacao_de_lugares.dto.PlaceResponseDTO;
 import com.fabriciolustosa.sistema_de_avaliacao_de_lugares.dto.PlaceUpdateRequestDTO;
+import com.fabriciolustosa.sistema_de_avaliacao_de_lugares.dto.ReviewRequestDTO;
 import com.fabriciolustosa.sistema_de_avaliacao_de_lugares.dto.ReviewResponseDTO;
 import com.fabriciolustosa.sistema_de_avaliacao_de_lugares.entities.Place;
 import com.fabriciolustosa.sistema_de_avaliacao_de_lugares.entities.Review;
