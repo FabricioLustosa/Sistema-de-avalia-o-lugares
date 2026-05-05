@@ -2,6 +2,7 @@ package com.fabriciolustosa.sistema_de_avaliacao_de_lugares.entities;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 
 import java.util.ArrayList;
@@ -20,7 +21,10 @@ public class Place {
     @JsonManagedReference
     private List<Review> reviews = new ArrayList<>();
 
+    @NotBlank(message = "Name is required")
     private String name;
+
+    @NotBlank(message = "City is required")
     private String city;
     private String description;
 

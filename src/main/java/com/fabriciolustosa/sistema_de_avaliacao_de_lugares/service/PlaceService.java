@@ -1,9 +1,6 @@
 package com.fabriciolustosa.sistema_de_avaliacao_de_lugares.service;
 
-import com.fabriciolustosa.sistema_de_avaliacao_de_lugares.dto.PlaceResponseDTO;
-import com.fabriciolustosa.sistema_de_avaliacao_de_lugares.dto.PlaceUpdateRequestDTO;
-import com.fabriciolustosa.sistema_de_avaliacao_de_lugares.dto.ReviewRequestDTO;
-import com.fabriciolustosa.sistema_de_avaliacao_de_lugares.dto.ReviewResponseDTO;
+import com.fabriciolustosa.sistema_de_avaliacao_de_lugares.dto.*;
 import com.fabriciolustosa.sistema_de_avaliacao_de_lugares.entities.Place;
 import com.fabriciolustosa.sistema_de_avaliacao_de_lugares.entities.Review;
 import com.fabriciolustosa.sistema_de_avaliacao_de_lugares.exception.ResourceNotFoundException;
@@ -11,7 +8,8 @@ import com.fabriciolustosa.sistema_de_avaliacao_de_lugares.repository.PlaceRepos
 import com.fabriciolustosa.sistema_de_avaliacao_de_lugares.repository.ReviewRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -27,8 +25,8 @@ public class PlaceService {
     @Autowired
     private ReviewRepository reviewRepository;
 
-    public List<Place> listAll(){
-        return placeRepository.findAll();
+    public Page<Place> listAll(Pageable pageable){
+        return placeRepository.findAll(pageable);
     }
 
     public Place create(Place place){
@@ -49,6 +47,10 @@ public class PlaceService {
         //Place place = placeRepository.findById(id);//returns an Optional<Place>, not a Place directly
         return placeRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Place not found with id: " + id));
+    }
+
+    public List<Place> findByCity(String city){
+        return placeRepository.findByCity(city);
     }
 
     public void delete(Long id){
@@ -100,5 +102,26 @@ public class PlaceService {
         }
 
         return placeRepository.save(place);
+    }
+
+    public Review partialUpdateReview(Long placeId, Long reviewId, ReviewUpdateRequestDTO updateRequest){
+        Place place = placeRepository.findById(placeId)
+                .orElseThrow(() -> new ResourceNotFoundException("Place not found!"));
+
+        Review review = reviewRepository.findById(reviewId)
+                .orElseThrow(() -> new ResourceNotFoundException("Review not found!"));
+
+        if(!review.getPlace().getId().equals(placeId)){
+            throw new ResourceNotFoundException("Review does not belong to this place!");
+        }
+
+        if(updateRequest.getComment() != null){
+            review.setComment(updateRequest.getComment());
+        }
+        if(updateRequest.getRating() != null){
+            review.setRating(updateRequest.getRating());
+        }
+
+        return reviewRepository.save(review);
     }
 }

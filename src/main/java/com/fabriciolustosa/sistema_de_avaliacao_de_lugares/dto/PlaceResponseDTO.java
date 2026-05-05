@@ -18,10 +18,5 @@ public class PlaceResponseDTO {//control what the API returns
     private String description;
     private double averageRating;
     private List<ReviewResponseDTO> reviewResponseDTOS;
-    private Place place;
-
-    public PlaceResponseDTO(Place place){
-        this.place = place;
-    }
 
 }

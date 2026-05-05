@@ -1,15 +1,15 @@
 package com.fabriciolustosa.sistema_de_avaliacao_de_lugares.controller;
 
-import com.fabriciolustosa.sistema_de_avaliacao_de_lugares.dto.PlaceUpdateRequestDTO;
-import com.fabriciolustosa.sistema_de_avaliacao_de_lugares.dto.ReviewRequestDTO;
-import com.fabriciolustosa.sistema_de_avaliacao_de_lugares.dto.ReviewResponseDTO;
+import com.fabriciolustosa.sistema_de_avaliacao_de_lugares.dto.*;
 import com.fabriciolustosa.sistema_de_avaliacao_de_lugares.entities.Place;
-import com.fabriciolustosa.sistema_de_avaliacao_de_lugares.dto.PlaceResponseDTO;
 import com.fabriciolustosa.sistema_de_avaliacao_de_lugares.entities.Review;
+import com.fabriciolustosa.sistema_de_avaliacao_de_lugares.mapper.PlaceMapper;
 import com.fabriciolustosa.sistema_de_avaliacao_de_lugares.mapper.ReviewMapper;
 import com.fabriciolustosa.sistema_de_avaliacao_de_lugares.service.PlaceService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -23,27 +23,26 @@ public class PlaceController {
     private PlaceService placeService; // ← usa o Service, não o Repository diretamente
 
     @PostMapping
-    public ResponseEntity<PlaceResponseDTO> create(@RequestBody Place place){
-        Place salvo = placeService.create(place);
-        return ResponseEntity.status(201).body(new PlaceResponseDTO(salvo));//ao salvar o place, os reviews são salvos automaticamente
+    public ResponseEntity<PlaceResponseDTO> create(@Valid @RequestBody Place place){
+        Place salved = placeService.create(place);
+        return ResponseEntity.status(201).body(PlaceMapper.toDTO(salved));//ao salvar o place, os reviews são salvos automaticamente
     }
 
     // Endpoint para listar todos os lugares convertidos para DTO
     @GetMapping
-    public ResponseEntity<List<PlaceResponseDTO>> list(){
-        List<PlaceResponseDTO>places = placeService.listAll()
-                .stream()
-                .map(PlaceResponseDTO::new) // Mapeia cada Place para PlaceResponseDTO
-                .toList();
+    public ResponseEntity<Page<PlaceResponseDTO>> list(Pageable pageable){
 
-        return ResponseEntity.ok(places);
+        return ResponseEntity.ok(
+                placeService.listAll(pageable)
+                        .map(PlaceMapper::toDTO)
+        );
     }
 
     @GetMapping("/top-rated")
     public ResponseEntity<List<PlaceResponseDTO>> topRated(){
              List<PlaceResponseDTO> places = placeService.getTopRated()
                .stream()
-               .map(PlaceResponseDTO::new)
+               .map(PlaceMapper::toDTO)
                .toList();
 
         return ResponseEntity.ok(places);
@@ -52,8 +51,19 @@ public class PlaceController {
     @GetMapping("{id}")
     public ResponseEntity<PlaceResponseDTO> findById(@PathVariable Long id){
         Place place = placeService.findById(id);
-        return ResponseEntity.ok(new PlaceResponseDTO(place));
+        return ResponseEntity.ok(PlaceMapper.toDTO(place));
     }
+
+    @GetMapping("/search")
+    public ResponseEntity<List<PlaceResponseDTO>> searchByCiyt(@RequestParam String city){
+        return ResponseEntity.ok(
+                placeService.findByCity(city)
+                    .stream()
+                    .map(PlaceMapper::toDTO)
+                    .toList()
+                );
+    }
+
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable Long id){
@@ -80,6 +90,13 @@ public class PlaceController {
     public ResponseEntity<PlaceResponseDTO> partialUpdatePlace(@PathVariable Long id, @Valid @RequestBody PlaceUpdateRequestDTO updateRequest){
         Place place = placeService.partialUpdatePlace(id, updateRequest);
         return ResponseEntity.ok()
-                .body(new PlaceResponseDTO(place));
+                .body(PlaceMapper.toDTO(place));
+    }
+
+    @PatchMapping("/{placeId}/reviews/{reviewId}")
+    public ResponseEntity<ReviewResponseDTO> partialUpdateReview(@PathVariable Long placeId, @PathVariable Long reviewId, @Valid @RequestBody ReviewUpdateRequestDTO updateRequest){
+        Review review = placeService.partialUpdateReview(placeId, reviewId, updateRequest);
+        return ResponseEntity.ok()
+                .body(ReviewMapper.toDTO(review));
     }
 }
