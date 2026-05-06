@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Editar Avaliação</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Georgia', serif; background: #f5f0eb; color: #2c2c2c; }
+        header { background: #2c2c2c; color: #f5f0eb; padding: 20px 40px; display: flex; justify-content: space-between; align-items: center; }
+        header a { color: #f5f0eb; text-decoration: none; font-size: 0.9rem; border-bottom: 1px solid #f5f0eb; }
+        .container { max-width: 600px; margin: 40px auto; padding: 0 20px; }
+        .form-card { background: white; border-radius: 8px; padding: 40px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
+        .form-card h1 { font-size: 1.5rem; margin-bottom: 8px; letter-spacing: 2px; }
+        .place-name { color: #888; font-size: 0.95rem; margin-bottom: 32px; }
+        .form-group { margin-bottom: 20px; }
+        .form-group label { display: block; font-size: 0.9rem; color: #888; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 1px; }
+        .form-group input, .form-group textarea { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 4px; font-family: inherit; font-size: 0.95rem; transition: border 0.2s; }
+        .form-group input:focus, .form-group textarea:focus { outline: none; border-color: #2c2c2c; }
+        .form-group textarea { height: 120px; resize: vertical; }
+        .btn-submit { width: 100%; background: #2c2c2c; color: white; border: none; padding: 14px; border-radius: 4px; cursor: pointer; font-size: 1rem; font-family: inherit; letter-spacing: 1px; transition: background 0.2s; }
+        .btn-submit:hover { background: #c0392b; }
+    </style>
+</head>
+<body>
+<header>
+    <a th:href="@{/view/{id}(id=${place.id})}">← Voltar</a>
+</header>
+<div class="container">
+    <div class="form-card">
+        <h1>EDITAR AVALIAÇÃO</h1>
+        <div class="place-name" th:text="${place.name}"></div>
+        <form th:action="@{/view/{placeId}/reviews/{reviewId}/edit(placeId=${place.id}, reviewId=${review.id})}" method="post">
+            <div class="form-group">
+                <label>Nota (1 a 5)</label>
+                <input type="number" name="rating" min="1" max="5" th:value="${review.rating}" required />
+            </div>
+            <div class="form-group">
+                <label>Comentário</label>
+                <textarea name="comment" th:text="${review.comment}" required></textarea>
+            </div>
+            <button class="btn-submit" type="submit">Salvar avaliação</button>
+        </form>
+    </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Lugares</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Georgia', serif; background: #f5f0eb; color: #2c2c2c; }
+        header { background: #2c2c2c; color: #f5f0eb; padding: 20px 40px; display: flex; justify-content: space-between; align-items: center; gap: 16px; flex-wrap: wrap; }
+        header h1 { font-size: 1.8rem; letter-spacing: 2px; }
+        .header-actions { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
+        .btn { text-decoration: none; padding: 8px 16px; border-radius: 4px; font-size: 0.9rem; cursor: pointer; border: none; font-family: inherit; }
+        .btn-primary { background: #c0392b; color: white; }
+        .btn-outline { background: none; border: 2px solid #f5f0eb; color: #f5f0eb; }
+        .search-form { display: flex; gap: 8px; }
+        .search-form input { padding: 8px 12px; border: none; border-radius: 4px; font-family: inherit; font-size: 0.9rem; }
+        .search-form button { padding: 8px 16px; background: #c0392b; color: white; border: none; border-radius: 4px; cursor: pointer; font-family: inherit; }
+        .container { max-width: 1000px; margin: 40px auto; padding: 0 20px; }
+        .info-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; }
+        .info-bar span { color: #888; font-size: 0.9rem; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 24px; }
+        .card { background: white; border-radius: 8px; padding: 24px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); transition: transform 0.2s; }
+        .card:hover { transform: translateY(-4px); }
+        .card h2 { font-size: 1.2rem; margin-bottom: 8px; }
+        .card .city { color: #888; font-size: 0.9rem; margin-bottom: 12px; }
+        .card .description { font-size: 0.95rem; color: #555; margin-bottom: 16px; line-height: 1.5; }
+        .card .rating { font-size: 1rem; color: #c0392b; font-weight: bold; margin-bottom: 16px; }
+        .card a { text-decoration: none; color: #2c2c2c; border-bottom: 2px solid #c0392b; font-size: 0.9rem; }
+        .pagination { display: flex; justify-content: center; gap: 8px; margin-top: 40px; }
+        .pagination a { padding: 8px 16px; border-radius: 4px; text-decoration: none; font-size: 0.9rem; background: white; color: #2c2c2c; box-shadow: 0 2px 4px rgba(0,0,0,0.08); }
+        .pagination a:hover { background: #c0392b; color: white; }
+        .pagination .active { background: #2c2c2c; color: white; pointer-events: none; }
+        .empty { text-align: center; color: #888; margin-top: 60px; font-size: 1.1rem; }
+    </style>
+</head>
+<body>
+<header>
+    <h1>LUGARES</h1>
+    <div class="header-actions">
+        <form class="search-form" th:action="@{/view}" method="get">
+            <input type="text" name="city" placeholder="Buscar por cidade..." th:value="${searchCity}" />
+            <button type="submit">Buscar</button>
+        </form>
+        <a th:href="@{/view/top-rated}" class="btn btn-outline">⭐ Top Rated</a>
+        <a th:href="@{/view/new}" class="btn btn-primary">+ Novo Lugar</a>
+    </div>
+</header>
+
+<div class="container">
+    <div class="info-bar">
+        <span th:if="${searching}" th:text="'Resultados para: ' + ${searchCity}"></span>
+        <span th:if="${topRated}">Ordenado por avaliação</span>
+        <span th:if="${not searching and not topRated}" th:text="'Página ' + (${currentPage} + 1)"></span>
+        <a th:if="${searching or topRated}" th:href="@{/view}" style="font-size:0.9rem; color:#c0392b;">← Ver todos</a>
+    </div>
+
+    <div class="grid" th:if="${not #lists.isEmpty(places)}">
+        <div class="card" th:each="place : ${places}">
+            <h2 th:text="${place.name}"></h2>
+            <div class="city" th:text="${place.city}"></div>
+            <div class="description" th:text="${place.description}"></div>
+            <div class="rating" th:text="'⭐ ' + ${#numbers.formatDecimal(place.averageRating, 1, 1)}"></div>
+            <a th:href="@{/view/{id}(id=${place.id})}">Ver detalhes →</a>
+        </div>
+    </div>
+
+    <div class="empty" th:if="${#lists.isEmpty(places)}">
+        <p>Nenhum lugar encontrado.</p>
+    </div>
+
+    <div class="pagination" th:if="${totalPages > 1 and not searching and not topRated}">
+        <a th:if="${currentPage > 0}" th:href="@{/view(page=${currentPage - 1}, size=${size})}">← Anterior</a>
+        <span th:each="i : ${#numbers.sequence(0, totalPages - 1)}">
+            <a th:href="@{/view(page=${i}, size=${size})}"
+               th:text="${i + 1}"
+               th:classappend="${i == currentPage} ? 'active' : ''"></a>
+        </span>
+        <a th:if="${currentPage < totalPages - 1}" th:href="@{/view(page=${currentPage + 1}, size=${size})}">Próxima →</a>
+    </div>
+</div>
+</body>
+</html>

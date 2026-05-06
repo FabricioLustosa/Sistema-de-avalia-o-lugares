@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="${place.name}">Detalhes</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Georgia', serif; background: #f5f0eb; color: #2c2c2c; }
+        header { background: #2c2c2c; color: #f5f0eb; padding: 20px 40px; display: flex; justify-content: space-between; align-items: center; }
+        header a { color: #f5f0eb; text-decoration: none; font-size: 0.9rem; border-bottom: 1px solid #f5f0eb; }
+        .container { max-width: 800px; margin: 40px auto; padding: 0 20px; }
+        .place-header { background: white; border-radius: 8px; padding: 32px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); margin-bottom: 32px; }
+        .place-header h1 { font-size: 2rem; margin-bottom: 8px; }
+        .city { color: #888; font-size: 1rem; margin-bottom: 16px; }
+        .description { font-size: 1rem; color: #555; line-height: 1.6; margin-bottom: 16px; }
+        .rating { font-size: 1.4rem; color: #c0392b; font-weight: bold; }
+        .actions { margin-top: 20px; display: flex; gap: 12px; }
+        .btn { padding: 8px 16px; border-radius: 4px; cursor: pointer; font-size: 0.9rem; font-family: inherit; text-decoration: none; border: none; }
+        .btn-edit { background: #2c2c2c; color: white; }
+        .btn-edit:hover { background: #444; }
+        .btn-delete { background: none; border: 2px solid #c0392b; color: #c0392b; }
+        .btn-delete:hover { background: #c0392b; color: white; }
+        .btn-small { padding: 4px 10px; font-size: 0.8rem; border-radius: 4px; cursor: pointer; font-family: inherit; border: none; }
+        .btn-edit-small { background: #f5f0eb; color: #2c2c2c; border: 1px solid #ddd; }
+        .btn-delete-small { background: none; border: 1px solid #c0392b; color: #c0392b; }
+        .btn-delete-small:hover { background: #c0392b; color: white; }
+        .section-title { font-size: 1.3rem; margin-bottom: 20px; letter-spacing: 1px; }
+        .review-card { background: white; border-radius: 8px; padding: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); margin-bottom: 16px; }
+        .review-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+        .review-rating { font-size: 1rem; color: #c0392b; font-weight: bold; }
+        .review-comment { color: #555; line-height: 1.5; }
+        .review-actions { display: flex; gap: 8px; }
+        .review-form { background: white; border-radius: 8px; padding: 32px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); margin-top: 32px; }
+        .review-form h2 { font-size: 1.1rem; margin-bottom: 20px; letter-spacing: 1px; }
+        .form-group { margin-bottom: 16px; }
+        .form-group label { display: block; font-size: 0.9rem; color: #888; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 1px; }
+        .form-group input, .form-group textarea { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 4px; font-family: inherit; font-size: 0.95rem; }
+        .form-group input:focus, .form-group textarea:focus { outline: none; border-color: #2c2c2c; }
+        .form-group textarea { height: 100px; resize: vertical; }
+        .btn-submit { background: #2c2c2c; color: white; border: none; padding: 10px 24px; border-radius: 4px; cursor: pointer; font-size: 0.95rem; font-family: inherit; }
+        .btn-submit:hover { background: #c0392b; }
+        .empty-reviews { color: #888; font-size: 0.95rem; margin-bottom: 24px; }
+    </style>
+</head>
+<body>
+<header>
+    <a th:href="@{/view}">← Voltar</a>
+</header>
+<div class="container">
+    <div class="place-header">
+        <h1 th:text="${place.name}"></h1>
+        <div class="city" th:text="${place.city}"></div>
+        <div class="description" th:text="${place.description}"></div>
+        <div class="rating" th:text="'⭐ ' + ${#numbers.formatDecimal(place.averageRating, 1, 1)}"></div>
+        <div class="actions">
+            <a th:href="@{/view/{id}/edit(id=${place.id})}" class="btn btn-edit">Editar lugar</a>
+            <form th:action="@{/view/{id}/delete(id=${place.id})}" method="post" style="display:inline;">
+                <button class="btn btn-delete" type="submit">Deletar lugar</button>
+            </form>
+        </div>
+    </div>
+
+    <div class="section-title">AVALIAÇÕES</div>
+
+    <div th:if="${#lists.isEmpty(place.reviews)}" class="empty-reviews">
+        Nenhuma avaliação ainda.
+    </div>
+
+    <div class="review-card" th:each="review : ${place.reviews}">
+        <div class="review-header">
+            <div class="review-rating" th:text="'⭐ ' + ${review.rating} + '/5'"></div>
+            <div class="review-actions">
+                <a th:href="@{/view/{placeId}/reviews/{reviewId}/edit(placeId=${place.id}, reviewId=${review.id})}"
+                   class="btn-small btn-edit-small">Editar</a>
+                <form th:action="@{/view/{placeId}/reviews/{reviewId}/delete(placeId=${place.id}, reviewId=${review.id})}"
+                      method="post" style="display:inline;">
+                    <button class="btn-small btn-delete-small" type="submit">Deletar</button>
+                </form>
+            </div>
+        </div>
+        <div class="review-comment" th:text="${review.comment}"></div>
+    </div>
+
+    <div class="review-form">
+        <h2>ADICIONAR AVALIAÇÃO</h2>
+        <form th:action="@{/view/{placeId}/reviews(placeId=${place.id})}" method="post">
+            <div class="form-group">
+                <label>Nota (1 a 5)</label>
+                <input type="number" name="rating" min="1" max="5" required />
+            </div>
+            <div class="form-group">
+                <label>Comentário</label>
+                <textarea name="comment" required></textarea>
+            </div>
+            <button class="btn-submit" type="submit">Enviar avaliação</button>
+        </form>
+    </div>
+</div>
+</body>
+</html>
