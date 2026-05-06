@@ -64,6 +64,11 @@ public class PlaceController {
                 );
     }
 
+    @GetMapping("/")
+    public String home(){
+        return "API is running";
+    }
+
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable Long id){
