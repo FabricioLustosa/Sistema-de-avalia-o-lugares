@@ -3,15 +3,19 @@ package com.fabriciolustosa.sistema_de_avaliacao_de_lugares.service;
 import com.fabriciolustosa.sistema_de_avaliacao_de_lugares.dto.*;
 import com.fabriciolustosa.sistema_de_avaliacao_de_lugares.entities.Place;
 import com.fabriciolustosa.sistema_de_avaliacao_de_lugares.entities.Review;
+import com.fabriciolustosa.sistema_de_avaliacao_de_lugares.entities.User;
+import com.fabriciolustosa.sistema_de_avaliacao_de_lugares.exception.ForbiddenException;
 import com.fabriciolustosa.sistema_de_avaliacao_de_lugares.exception.ResourceNotFoundException;
 import com.fabriciolustosa.sistema_de_avaliacao_de_lugares.repository.PlaceRepository;
 import com.fabriciolustosa.sistema_de_avaliacao_de_lugares.repository.ReviewRepository;
 import jakarta.transaction.Transactional;
+import org.springframework.security.core.Authentication;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import org.springframework.security.access.AccessDeniedException;
 import java.util.List;
 
 //essa camada service é a camada da lógica de negócio: valida, processa e chama o repository
@@ -25,11 +29,28 @@ public class PlaceService {
     @Autowired
     private ReviewRepository reviewRepository;
 
+    private void validateOwner(Place place, User user){
+        if(!place.getOwner().getId().equals(user.getId())){
+            throw new ForbiddenException("Access denied");
+        }
+    }
+
+    private User getAuthenticatedUser(Authentication authentication){
+        if(authentication.getPrincipal() instanceof User user) {
+            return user;
+        }
+        throw new AccessDeniedException("Invalid authentication");
+    }
+
     public Page<Place> listAll(Pageable pageable){
         return placeRepository.findAll(pageable);
     }
 
-    public Place create(Place place){
+    public Place create(Place place, Authentication authentication){
+
+        User user = getAuthenticatedUser(authentication);
+
+        place.setOwner(user);
         return placeRepository.save(place);
     }
 
@@ -53,8 +74,15 @@ public class PlaceService {
         return placeRepository.findByCity(city);
     }
 
-    public void delete(Long id){
-        placeRepository.deleteById(id);//ao deletar o place, os reviews são deletados automaticamente
+    public void delete(Long id, Authentication authentication){
+
+        Place place = placeRepository.findById(id)
+                .orElseThrow(() ->
+                        new ResourceNotFoundException("Place not found"));
+
+        User user = getAuthenticatedUser(authentication);
+        validateOwner(place, user);
+        placeRepository.delete(place);
     }
 
     public Review addReview(Long placeId, Review review) {
@@ -70,9 +98,8 @@ public class PlaceService {
         return review;
     }
 
-    // Método para deletar um review específico de um lugar
     @Transactional
-    public void deleteReview(Long placeId, Long id){
+    public void deleteReview(Long placeId, Long id, Authentication authentication){
         // Primeiro, verificamos se o lugar (Place) existe
         Place place = placeRepository.findById(placeId)
                 .orElseThrow(() -> new ResourceNotFoundException("Place not found"));
@@ -84,12 +111,18 @@ public class PlaceService {
            throw new ResourceNotFoundException("Review does not belong to this place");
        }
 
+       User user = getAuthenticatedUser(authentication);
+       validateOwner(place, user);
+
        place.getReviews().remove(review);//o elemento filho é excluido ao salvar o elemento pai
     }
 
-    public Place partialUpdatePlace(Long placeId, PlaceUpdateRequestDTO updateRequest){
+    public Place partialUpdatePlace(Long placeId, PlaceUpdateRequestDTO updateRequest, Authentication authentication){
         Place place = placeRepository.findById(placeId)
                 .orElseThrow(() -> new ResourceNotFoundException("Place not found!"));
+
+        User user = getAuthenticatedUser(authentication);
+        validateOwner(place, user);
 
         if(updateRequest.getName() != null){
             place.setName(updateRequest.getName());
@@ -104,12 +137,15 @@ public class PlaceService {
         return placeRepository.save(place);
     }
 
-    public Review partialUpdateReview(Long placeId, Long reviewId, ReviewUpdateRequestDTO updateRequest){
+    public Review partialUpdateReview(Long placeId, Long reviewId, ReviewUpdateRequestDTO updateRequest, Authentication authentication){
         Place place = placeRepository.findById(placeId)
                 .orElseThrow(() -> new ResourceNotFoundException("Place not found!"));
 
         Review review = reviewRepository.findById(reviewId)
                 .orElseThrow(() -> new ResourceNotFoundException("Review not found!"));
+
+        User user = getAuthenticatedUser(authentication);
+        validateOwner(place, user);
 
         if(!review.getPlace().getId().equals(placeId)){
             throw new ResourceNotFoundException("Review does not belong to this place!");

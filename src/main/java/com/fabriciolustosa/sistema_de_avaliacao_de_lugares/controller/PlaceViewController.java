@@ -4,15 +4,14 @@ import com.fabriciolustosa.sistema_de_avaliacao_de_lugares.dto.PlaceUpdateReques
 import com.fabriciolustosa.sistema_de_avaliacao_de_lugares.dto.ReviewUpdateRequestDTO;
 import com.fabriciolustosa.sistema_de_avaliacao_de_lugares.entities.Place;
 import com.fabriciolustosa.sistema_de_avaliacao_de_lugares.entities.Review;
+import com.fabriciolustosa.sistema_de_avaliacao_de_lugares.exception.ResourceNotFoundException;
 import com.fabriciolustosa.sistema_de_avaliacao_de_lugares.service.PlaceService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @Controller
 @RequestMapping("/view")
@@ -69,8 +68,8 @@ public class PlaceViewController {
     }
 
     @PostMapping("/new")
-    public String createPlace(@ModelAttribute Place place) {
-        Place saved = placeService.create(place);
+    public String createPlace(@ModelAttribute Place place, Authentication authentication) {
+        Place saved = placeService.create(place, authentication);
         return "redirect:/view/" + saved.getId();
     }
 
@@ -81,8 +80,8 @@ public class PlaceViewController {
     }
 
     @PostMapping("/{id}/edit")
-    public String updatePlace(@PathVariable Long id, @ModelAttribute PlaceUpdateRequestDTO updateRequest) {
-        placeService.partialUpdatePlace(id, updateRequest);
+    public String updatePlace(@PathVariable Long id, @ModelAttribute PlaceUpdateRequestDTO updateRequest, Authentication authentication) {
+        placeService.partialUpdatePlace(id, updateRequest, authentication);
         return "redirect:/view/" + id;
     }
 
@@ -93,29 +92,38 @@ public class PlaceViewController {
     }
 
     @PostMapping("/{placeId}/reviews/{reviewId}/delete")
-    public String deleteReview(@PathVariable Long placeId, @PathVariable Long reviewId) {
-        placeService.deleteReview(placeId, reviewId);
+    public String deleteReview(@PathVariable Long placeId, @PathVariable Long reviewId, Authentication authentication) {
+        placeService.deleteReview(placeId, reviewId, authentication);
         return "redirect:/view/" + placeId;
     }
 
     @GetMapping("/{placeId}/reviews/{reviewId}/edit")
     public String editReviewForm(@PathVariable Long placeId, @PathVariable Long reviewId, Model model) {
-        model.addAttribute("place", placeService.findById(placeId));
-        model.addAttribute("review", placeService.findById(placeId).getReviews()
-                .stream().filter(r -> r.getId().equals(reviewId)).findFirst().orElseThrow());
+        Place place = placeService.findById(placeId);
+
+        Review review = place.getReviews()
+                        .stream()
+                        .filter(r -> r.getId().equals(reviewId))
+                        .findFirst()
+                        .orElseThrow(() -> new ResourceNotFoundException("Review not found"));
+
+
+        model.addAttribute("place", placeId);
+        model.addAttribute("review", review);
+
         return "places/edit-review";
     }
 
     @PostMapping("/{placeId}/reviews/{reviewId}/edit")
     public String updateReview(@PathVariable Long placeId, @PathVariable Long reviewId,
-                               @ModelAttribute ReviewUpdateRequestDTO updateRequest) {
-        placeService.partialUpdateReview(placeId, reviewId, updateRequest);
+                               @ModelAttribute ReviewUpdateRequestDTO updateRequest, Authentication authentication) {
+        placeService.partialUpdateReview(placeId, reviewId, updateRequest, authentication);
         return "redirect:/view/" + placeId;
     }
 
     @PostMapping("/{id}/delete")
-    public String deletePlace(@PathVariable Long id) {
-        placeService.delete(id);
+    public String deletePlace(@PathVariable Long id, Authentication authentication) {
+        placeService.delete(id, authentication);
         return "redirect:/view";
     }
 }

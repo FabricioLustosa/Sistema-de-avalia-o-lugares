@@ -21,6 +21,10 @@ public class Place {
     @JsonManagedReference
     private List<Review> reviews = new ArrayList<>();
 
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private User owner;
+
     @NotBlank(message = "Name is required")
     private String name;
 

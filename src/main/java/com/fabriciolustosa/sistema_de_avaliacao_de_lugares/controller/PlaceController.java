@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -23,8 +24,8 @@ public class PlaceController {
     private PlaceService placeService; // ← usa o Service, não o Repository diretamente
 
     @PostMapping
-    public ResponseEntity<PlaceResponseDTO> create(@Valid @RequestBody Place place){
-        Place salved = placeService.create(place);
+    public ResponseEntity<PlaceResponseDTO> create(@Valid @RequestBody Place place, Authentication authentication){
+        Place salved = placeService.create(place, authentication);
         return ResponseEntity.status(201).body(PlaceMapper.toDTO(salved));//ao salvar o place, os reviews são salvos automaticamente
     }
 
@@ -55,7 +56,7 @@ public class PlaceController {
     }
 
     @GetMapping("/search")
-    public ResponseEntity<List<PlaceResponseDTO>> searchByCiyt(@RequestParam String city){
+    public ResponseEntity<List<PlaceResponseDTO>> searchByCity(@RequestParam String city){
         return ResponseEntity.ok(
                 placeService.findByCity(city)
                     .stream()
@@ -66,9 +67,9 @@ public class PlaceController {
 
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable Long id){
-        placeService.delete(id);//ao deletar o place, os reviews são deletados automaticamente
-        return ResponseEntity.noContent().build(); //204 not found
+    public ResponseEntity<Void> delete(@PathVariable Long id, Authentication authentication){
+        placeService.delete(id, authentication);//ao deletar o place, os reviews são deletados automaticamente
+        return ResponseEntity.noContent().build(); //204 no Content
     }
 
     // Endpoint para adicionar uma avaliação a um lugar específico
@@ -81,21 +82,21 @@ public class PlaceController {
 
     // Endpoint para deletar uma avaliação específica de um lugar
     @DeleteMapping("/{placeId}/reviews/{id}")
-    public ResponseEntity<Void> deleteReview(@PathVariable Long placeId, @PathVariable Long id){
-        placeService.deleteReview(placeId, id);
+    public ResponseEntity<Void> deleteReview(@PathVariable Long placeId, @PathVariable Long id, Authentication authentication){
+        placeService.deleteReview(placeId, id, authentication);
         return ResponseEntity.status(204).build();
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<PlaceResponseDTO> partialUpdatePlace(@PathVariable Long id, @Valid @RequestBody PlaceUpdateRequestDTO updateRequest){
-        Place place = placeService.partialUpdatePlace(id, updateRequest);
+    public ResponseEntity<PlaceResponseDTO> partialUpdatePlace(@PathVariable Long id, @Valid @RequestBody PlaceUpdateRequestDTO updateRequest, Authentication authentication){
+        Place place = placeService.partialUpdatePlace(id, updateRequest, authentication);
         return ResponseEntity.ok()
                 .body(PlaceMapper.toDTO(place));
     }
 
     @PatchMapping("/{placeId}/reviews/{reviewId}")
-    public ResponseEntity<ReviewResponseDTO> partialUpdateReview(@PathVariable Long placeId, @PathVariable Long reviewId, @Valid @RequestBody ReviewUpdateRequestDTO updateRequest){
-        Review review = placeService.partialUpdateReview(placeId, reviewId, updateRequest);
+    public ResponseEntity<ReviewResponseDTO> partialUpdateReview(@PathVariable Long placeId, @PathVariable Long reviewId, @Valid @RequestBody ReviewUpdateRequestDTO updateRequest, Authentication authentication){
+        Review review = placeService.partialUpdateReview(placeId, reviewId, updateRequest, authentication);
         return ResponseEntity.ok()
                 .body(ReviewMapper.toDTO(review));
     }
