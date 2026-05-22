@@ -2,9 +2,11 @@ package com.fabriciolustosa.sistema_de_avaliacao_de_lugares;
 
 import com.fabriciolustosa.sistema_de_avaliacao_de_lugares.entities.User;
 import com.fabriciolustosa.sistema_de_avaliacao_de_lugares.repository.UserRepository;
+import com.fabriciolustosa.sistema_de_avaliacao_de_lugares.service.CustomUserDetailsService;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -20,7 +22,7 @@ public class SecurityConfig {
         http
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/").permitAll()
+                        .requestMatchers("/", "/register").permitAll()
                         .anyRequest().authenticated()
                 )
                 .formLogin(form -> form.permitAll())
@@ -34,24 +36,11 @@ public class SecurityConfig {
         return new BCryptPasswordEncoder();
     }
 
+
     @Bean
-    //seed
-    CommandLineRunner runner(UserRepository repository,
-                             PasswordEncoder encoder) {
-
-        return args -> {
-
-            if (repository.findByUsername("admin").isEmpty()) {
-
-                User user = new User();
-
-                user.setUsername("admin");
-                user.setPassword(
-                        encoder.encode("admin@123")
-                );
-
-                repository.save(user);
-            }
-        };
+    public DaoAuthenticationProvider daoAuthenticationProvider(CustomUserDetailsService customUserDetailsService, PasswordEncoder passwordEncoder){
+        DaoAuthenticationProvider provider = new DaoAuthenticationProvider(customUserDetailsService);
+        provider.setPasswordEncoder(passwordEncoder);
+        return provider;
     }
 }
