@@ -24,4 +24,8 @@ public class Review {
     @JsonBackReference//Ignora o campo place na serializacao
     private Place place;
 
+    @ManyToOne
+    @JoinColumn(name ="owner_id")
+    private User owner;
+
 }

@@ -2,26 +2,103 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <title>Register</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            background-color: #2563eb;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            color: #333;
+        }
+
+        .register-container {
+            background-color: #ffffff;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+        }
+
+        h1 {
+            color: #1a1a1a;
+            margin-bottom: 24px;
+            font-size: 24px;
+            font-weight: 600;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        input {
+            padding: 14px 16px;
+            border: 1.5px solid #d1d5db;
+            border-radius: 8px;
+            font-size: 15px;
+            transition: all 0.2s ease;
+            outline: none;
+        }
+
+        input:focus {
+            border-color: #2563eb;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.2);
+        }
+
+        button {
+            background-color: #2563eb;
+            color: #ffffff;
+            padding: 14px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+            margin-top: 8px;
+        }
+
+        button:hover {
+            background-color: #1d4ed8;
+        }
+
+        button:active {
+            transform: scale(0.99);
+        }
+    </style>
 </head>
+
 <body>
 
-<h1>Register</h1>
+    <div class="register-container">
+        <h1>Register User</h1>
 
-<form action="/register" method="post">
+        <form th:action="@{/register}" method="post">
 
-    <input type="text"
-           name="username"
-           placeholder="Username">
+            <input type="text"
+                   name="username"
+                   placeholder="Username">
 
-    <input type="password"
-           name="password"
-           placeholder="Password">
+            <input type="password"
+                   name="password"
+                   placeholder="Password">
 
-    <button type="submit">
-        Register
-    </button>
+            <button type="submit">
+                Register
+            </button>
 
-</form>
-
+        </form>
+    </div>
 </body>
 </html>

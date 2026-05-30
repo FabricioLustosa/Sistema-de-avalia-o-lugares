@@ -8,11 +8,13 @@ import com.fabriciolustosa.sistema_de_avaliacao_de_lugares.exception.ForbiddenEx
 import com.fabriciolustosa.sistema_de_avaliacao_de_lugares.exception.ResourceNotFoundException;
 import com.fabriciolustosa.sistema_de_avaliacao_de_lugares.repository.PlaceRepository;
 import com.fabriciolustosa.sistema_de_avaliacao_de_lugares.repository.ReviewRepository;
+import com.fabriciolustosa.sistema_de_avaliacao_de_lugares.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.security.core.Authentication;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import org.springframework.security.access.AccessDeniedException;
@@ -28,6 +30,9 @@ public class PlaceService {
 
     @Autowired
     private ReviewRepository reviewRepository;
+
+    @Autowired
+    private UserRepository userRepository;
 
     private void validateOwner(Place place, User user){
         if(!place.getOwner().getId().equals(user.getId())){
@@ -89,8 +94,15 @@ public class PlaceService {
         Place place = placeRepository.findById(placeId)
                 .orElseThrow(() -> new ResourceNotFoundException("Place not found"));
 
+        Authentication authentication = SecurityContextHolder
+                .getContext().getAuthentication();
 
+        String username = authentication.getName();
 
+        User user = userRepository.findByUsername(username)
+            .orElseThrow(() -> new RuntimeException("User not found"));
+
+        review.setOwner(user);
         review.setPlace(place);
         place.getReviews().add(review);
         placeRepository.save(place);
@@ -112,7 +124,10 @@ public class PlaceService {
        }
 
        User user = getAuthenticatedUser(authentication);
-       validateOwner(place, user);
+
+       if(!review.getOwner().getId().equals((user.getId()))){
+           throw new ForbiddenException("Access denied");
+       }
 
        place.getReviews().remove(review);//o elemento filho é excluido ao salvar o elemento pai
     }
@@ -145,7 +160,9 @@ public class PlaceService {
                 .orElseThrow(() -> new ResourceNotFoundException("Review not found!"));
 
         User user = getAuthenticatedUser(authentication);
-        validateOwner(place, user);
+        if(!review.getOwner().getId().equals(user.getId())){
+            throw new ForbiddenException("Access denied");
+        }
 
         if(!review.getPlace().getId().equals(placeId)){
             throw new ResourceNotFoundException("Review does not belong to this place!");

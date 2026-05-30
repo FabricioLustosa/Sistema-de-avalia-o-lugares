@@ -12,6 +12,9 @@ public class PlaceMapper {
         dto.setCity(place.getCity());
         dto.setDescription(place.getDescription());
         dto.setAverageRating(place.getAverageRating());
+        dto.setOwnerUsername(
+                place.getOwner().getUsername()
+        );
 
         // Aqui convertemos a lista de Entidades Review para uma lista de DTOs ReviewResponseDTO
         // Isso evita expor a entidade completa e resolve problemas de recursão infinita no JSON

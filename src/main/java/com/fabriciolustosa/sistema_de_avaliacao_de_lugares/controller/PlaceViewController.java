@@ -4,6 +4,7 @@ import com.fabriciolustosa.sistema_de_avaliacao_de_lugares.dto.PlaceUpdateReques
 import com.fabriciolustosa.sistema_de_avaliacao_de_lugares.dto.ReviewUpdateRequestDTO;
 import com.fabriciolustosa.sistema_de_avaliacao_de_lugares.entities.Place;
 import com.fabriciolustosa.sistema_de_avaliacao_de_lugares.entities.Review;
+import com.fabriciolustosa.sistema_de_avaliacao_de_lugares.entities.User;
 import com.fabriciolustosa.sistema_de_avaliacao_de_lugares.exception.ResourceNotFoundException;
 import com.fabriciolustosa.sistema_de_avaliacao_de_lugares.service.PlaceService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,7 +22,7 @@ public class PlaceViewController {
     private PlaceService placeService;
 
     @GetMapping
-    public String listPlaces(Model model,
+    public String listPlaces(Model model, Authentication authentication,
                              @RequestParam(defaultValue = "0") int page,
                              @RequestParam(defaultValue = "6") int size,
                              @RequestParam(required = false) String city) {
@@ -41,23 +42,39 @@ public class PlaceViewController {
             model.addAttribute("currentPage", page);
             model.addAttribute("size", size);
         }
+        model.addAttribute(
+                "username",
+                authentication.getName()
+        );
         return "places/list";
     }
 
     @GetMapping("/top-rated")
-    public String topRated(Model model) {
+    public String topRated(Model model, Authentication authentication) {
         model.addAttribute("places", placeService.getTopRated());
         model.addAttribute("topRated", true);
         model.addAttribute("searching", false);
         model.addAttribute("totalPages", 1);
         model.addAttribute("currentPage", 0);
+
+        if(authentication != null){
+            User user = (User) authentication.getPrincipal();
+            model.addAttribute("username", user.getUsername());
+        }
+
         return "places/list";
     }
 
     @GetMapping("/{id}")
-    public String placeDetail(@PathVariable Long id, Model model) {
-        model.addAttribute("place", placeService.findById(id));
-        model.addAttribute("newReview", new Review());
+    public String placeDetail(@PathVariable Long id, Model model, Authentication authentication) {
+        Place place = placeService.findById(id);
+        model.addAttribute("place", place);
+
+        if(authentication != null){
+            User user = (User) authentication.getPrincipal();
+            model.addAttribute("username", user.getUsername());
+        }
+
         return "places/detail";
     }
 
@@ -108,7 +125,7 @@ public class PlaceViewController {
                         .orElseThrow(() -> new ResourceNotFoundException("Review not found"));
 
 
-        model.addAttribute("place", placeId);
+        model.addAttribute("place", place);
         model.addAttribute("review", review);
 
         return "places/edit-review";

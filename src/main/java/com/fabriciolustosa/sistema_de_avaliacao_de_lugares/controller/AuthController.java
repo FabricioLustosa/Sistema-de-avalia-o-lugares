@@ -27,7 +27,7 @@ public class AuthController {
     @PostMapping("/register")
     public String register(@ModelAttribute RegisterRequestDTO data){
         String username = data.getUsername().trim();
-        System.out.println(repository.findAll());
+
         if(repository.findByUsername(username).isPresent()){
             return "redirect:/register?error";
         }

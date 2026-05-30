@@ -5,16 +5,19 @@
     <title>Lugares</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: 'Georgia', serif; background: #f5f0eb; color: #2c2c2c; }
-        header { background: #2c2c2c; color: #f5f0eb; padding: 20px 40px; display: flex; justify-content: space-between; align-items: center; gap: 16px; flex-wrap: wrap; }
+        body { font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background: #dfece6; color: #2c2c2c; }
+        header { background: #2563eb; color: #f5f0eb; padding: 20px 40px; display: flex; justify-content: space-between; align-items: center; gap: 16px; flex-wrap: wrap; }
         header h1 { font-size: 1.8rem; letter-spacing: 2px; }
+        .h2-user {margin-top: 20px; margin-left: 20px; text-transform: uppercase;}
+        .btn-logout{ transition: transform 0.2s; color: #f5f0eb; border-radius: 10px; border: none; background: #2563eb; margin-top: 20px; padding: 8px; cursor: pointer;}
+        .btn-logout:hover{ transform: translateY(-4px); }
         .header-actions { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
         .btn { text-decoration: none; padding: 8px 16px; border-radius: 4px; font-size: 0.9rem; cursor: pointer; border: none; font-family: inherit; }
-        .btn-primary { background: #c0392b; color: white; }
-        .btn-outline { background: none; border: 2px solid #f5f0eb; color: #f5f0eb; }
+        .btn-primary { background: #02031A; color: white; }
+        .btn-outline { background-color: #d33649; border: 2px solid #f5f0eb; color: #f5f0eb; }
         .search-form { display: flex; gap: 8px; }
         .search-form input { padding: 8px 12px; border: none; border-radius: 4px; font-family: inherit; font-size: 0.9rem; }
-        .search-form button { padding: 8px 16px; background: #c0392b; color: white; border: none; border-radius: 4px; cursor: pointer; font-family: inherit; }
+        .search-form button { padding: 8px 16px; background: #02031A; color: white; border: none; border-radius: 4px; cursor: pointer; font-family: inherit; }
         .container { max-width: 1000px; margin: 40px auto; padding: 0 20px; }
         .info-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; }
         .info-bar span { color: #888; font-size: 0.9rem; }
@@ -35,7 +38,7 @@
 </head>
 <body>
 <header>
-    <h1>LUGARES</h1>
+    <h1>AVALIÇÃO DE LUGARES</h1>
     <div class="header-actions">
         <form class="search-form" th:action="@{/view}" method="get">
             <input type="text" name="city" placeholder="Buscar por cidade..." th:value="${searchCity}" />
@@ -45,6 +48,8 @@
         <a th:href="@{/view/new}" class="btn btn-primary">+ Novo Lugar</a>
     </div>
 </header>
+
+<h2 class="h2-user" th:text="'Olá, ' + ${username}"></h2>
 
 <div class="container">
     <div class="info-bar">
@@ -77,6 +82,12 @@
         </span>
         <a th:if="${currentPage < totalPages - 1}" th:href="@{/view(page=${currentPage + 1}, size=${size})}">Próxima →</a>
     </div>
+
+    <form th:action="@{/logout}" method="post">
+        <button class="btn-logout" type="submit">
+            Logout
+        </button>
+    </form>
 </div>
 </body>
 </html>
