@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Login</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            background-color: #2563eb;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 24px;
+            color: #333;
+        }
+
+        .login-container {
+            background-color: #ffffff;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+        }
+
+        h1 {
+            color: #1a1a1a;
+            margin-bottom: 24px;
+            font-size: 24px;
+            font-weight: 600;
+        }
+
+        .demo-banner {
+            background-color: #eff6ff;
+            border: 1px solid #bfdbfe;
+            color: #1d4ed8;
+            font-size: 13px;
+            line-height: 1.4;
+            padding: 12px 14px;
+            border-radius: 8px;
+            margin-bottom: 24px;
+            text-align: left;
+        }
+
+        .alert {
+            font-size: 14px;
+            padding: 12px 14px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            text-align: left;
+        }
+
+        .alert-error {
+            background-color: #fdecea;
+            border: 1px solid #f5c2bd;
+            color: #c0392b;
+        }
+
+        .alert-info {
+            background-color: #eff6ff;
+            border: 1px solid #bfdbfe;
+            color: #2563eb;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            text-align: left;
+        }
+
+        .field-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        label {
+            font-size: 13px;
+            font-weight: 600;
+            color: #555;
+        }
+
+        input {
+            padding: 14px 16px;
+            border: 1.5px solid #d1d5db;
+            border-radius: 8px;
+            font-size: 15px;
+            transition: all 0.2s ease;
+            outline: none;
+        }
+
+        input:focus {
+            border-color: #2563eb;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.2);
+        }
+
+        button {
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.2s ease, transform 0.1s ease;
+        }
+
+        button:active {
+            transform: scale(0.99);
+        }
+
+        .btn-primary {
+            background-color: #2563eb;
+            color: #ffffff;
+            padding: 14px;
+            margin-top: 8px;
+        }
+
+        .btn-primary:hover {
+            background-color: #1d4ed8;
+        }
+
+        .guest-form {
+            margin-top: 12px;
+            gap: 0;
+        }
+
+        .btn-secondary {
+            background-color: #ffffff;
+            color: #2563eb;
+            border: 1.5px solid #bfdbfe;
+            padding: 12px;
+            font-size: 14px;
+        }
+
+        .btn-secondary:hover {
+            background-color: #eff6ff;
+        }
+
+        @media (max-width: 480px) {
+            .login-container {
+                padding: 28px 20px;
+            }
+
+            h1 {
+                font-size: 20px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="login-container">
+        <h1>Login</h1>
+
+        <div class="demo-banner">
+            Ambiente de demonstração — use o botão abaixo para explorar sem cadastro
+        </div>
+
+        <div class="alert alert-error" th:if="${param.error}">
+            Usuário ou senha inválidos.
+        </div>
+
+        <div class="alert alert-info" th:if="${param.logout}">
+            Você saiu com sucesso.
+        </div>
+
+        <form th:action="@{/login}" method="post">
+
+            <div class="field-group">
+                <label for="username">Usuário</label>
+                <input type="text"
+                       id="username"
+                       name="username"
+                       autocomplete="username"
+                       required>
+            </div>
+
+            <div class="field-group">
+                <label for="password">Senha</label>
+                <input type="password"
+                       id="password"
+                       name="password"
+                       autocomplete="current-password"
+                       required>
+            </div>
+
+            <button type="submit" class="btn-primary">
+                Entrar
+            </button>
+        </form>
+
+        <form th:action="@{/login}" method="post" class="guest-form">
+            <input type="hidden" name="username" value="demo">
+            <input type="hidden" name="password" value="demo123">
+            <button type="submit" class="btn-secondary">
+                Entrar como visitante
+            </button>
+        </form>
+    </div>
+</body>
+</html>

@@ -24,6 +24,11 @@ public class AuthController {
         return "register";
     }
 
+    @GetMapping("/login")
+    public String loginPage(){
+        return "login";
+    }
+
     @PostMapping("/register")
     public String register(@ModelAttribute RegisterRequestDTO data){
         String username = data.getUsername().trim();
