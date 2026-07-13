@@ -2,31 +2,17 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Editar Lugar</title>
-    <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background: #dfece6; color: #2c2c2c; }
-        header { background: #2563eb; color: #f5f0eb; padding: 20px 40px; display: flex; justify-content: space-between; align-items: center; }
-        header a { color: #f5f0eb; text-decoration: none; font-size: 0.9rem; border-bottom: 1px solid #f5f0eb; }
-        .container { max-width: 600px; margin: 40px auto; padding: 0 20px; }
-        .form-card { background: white; border-radius: 8px; padding: 40px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
-        .form-card h1 { font-size: 1.5rem; margin-bottom: 32px; letter-spacing: 2px; }
-        .form-group { margin-bottom: 20px; }
-        .form-group label { display: block; font-size: 0.9rem; color: #888; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 1px; }
-        .form-group input, .form-group textarea { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 4px; font-family: inherit; font-size: 0.95rem; transition: border 0.2s; }
-        .form-group input:focus, .form-group textarea:focus { outline: none; border-color: #2c2c2c; }
-        .form-group textarea { height: 120px; resize: vertical; }
-        .btn-submit { width: 100%; background: #2c2c2c; color: white; border: none; padding: 14px; border-radius: 4px; cursor: pointer; font-size: 1rem; font-family: inherit; letter-spacing: 1px; transition: background 0.2s; }
-        .btn-submit:hover { background: #c0392b; }
-    </style>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
 </head>
 <body>
-<header>
-    <a th:href="@{/view/{id}(id=${place.id})}">← Voltar</a>
+<header class="app-header">
+    <a class="back-link" th:href="@{/view/{id}(id=${place.id})}">← Voltar</a>
 </header>
-<div class="container">
+<div class="container-narrow">
     <div class="form-card">
-        <h1>EDITAR LUGAR</h1>
+        <h1>Editar lugar</h1>
         <form th:action="@{/view/{id}/edit(id=${place.id})}" method="post">
             <div class="form-group">
                 <label>Nome</label>
@@ -40,7 +26,7 @@
                 <label>Descrição</label>
                 <textarea name="description" th:text="${place.description}"></textarea>
             </div>
-            <button class="btn-submit" type="submit">Salvar alterações</button>
+            <button class="btn btn-primary btn-block" type="submit">Salvar alterações</button>
         </form>
     </div>
 </div>
